@@ -14,15 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $db = getDatabase();
     
-    // We need to fetch questions to verify answers
-    // Efficiently, we could use an $in query if we had IDs, 
-    // but here iterating over submitted answers is okay for small scale.
+    // Track which questions were attempted
+    $attempted_questions = array_keys($answers);
     
     foreach ($answers as $qId => $userAnswer) {
         $total++;
         try {
-            $question = $db->questions->findOne(['_id' => new MongoDB\BSON\ObjectId($qId)]);
-            if ($question && (int)$question->correct_index === (int)$userAnswer) {
+            $question = $db->questions->findOne(['_id' => $qId]);
+            if ($question && (int)($question['correct_index'] ?? 0) === (int)$userAnswer) {
                 $score++;
             }
         } catch (Exception $e) {
@@ -30,22 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Double check total against actual total questions if needed, 
-    // but relying on submitted answers ensures we grade what was seen.
-    // For better security, we should fetch ALL questions and compare.
-    $allQuestionsCount = $db->questions->countDocuments();
-    
-    // If the student missed some questions (didn't select), they aren't in $_POST['answers']
-    // So 'total' should ideally be the total count of questions available.
-    $total = $allQuestionsCount; 
+    // Get count of published questions
+    $publishedCount = $db->questions->countDocuments(['status' => 'published']);
+    $total = $publishedCount;
 
-    // Store result
+    // Store result with attempted questions
     $result = $db->results->insertOne([
         'user_id' => $_SESSION['user_id'],
         'username' => $_SESSION['username'],
         'score' => $score,
         'total' => $total,
-        'date' => new MongoDB\BSON\UTCDateTime()
+        'attempted_questions' => $attempted_questions,
+        'date' => date('Y-m-d H:i:s')
     ]);
 
     $_SESSION['last_quiz_score'] = $score;

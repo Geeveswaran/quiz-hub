@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 }
 
 $db = getDatabase();
-$questions = $db->questions->find([], ['sort' => ['created_at' => -1]]);
+$questions = $db->questions->find(['status' => 'published'], ['sort' => ['created_at' => -1]]);
 $results = $db->results->find([], ['sort' => ['date' => -1]]);
 ?>
 <!DOCTYPE html>
@@ -54,8 +54,8 @@ $results = $db->results->find([], ['sort' => ['date' => -1]]);
                     <tbody>
                         <?php foreach ($questions as $q): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($q->text); ?></td>
-                            <td><?php echo htmlspecialchars($q->options[$q->correct_index - 1]); ?></td>
+                            <td><?php echo htmlspecialchars($q['text'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($q['options'][$q['correct_index'] - 1] ?? ''); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -82,16 +82,11 @@ $results = $db->results->find([], ['sort' => ['date' => -1]]);
                     <tbody>
                         <?php foreach ($results as $r): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($r->username); ?></td>
-                            <td><?php echo htmlspecialchars($r->score) . ' / ' . htmlspecialchars($r->total); ?></td>
+                            <td><?php echo htmlspecialchars($r['username'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars(($r['score'] ?? 0) . ' / ' . ($r['total'] ?? 0)); ?></td>
                             <td>
                                 <?php 
-                                // MongoDB BSON Date to PHP DateTime
-                                if (isset($r->date) && $r->date instanceof MongoDB\BSON\UTCDateTime) {
-                                    echo $r->date->toDateTime()->format('Y-m-d H:i:s');
-                                } else {
-                                    echo "N/A";
-                                }
+                                echo htmlspecialchars($r['date'] ?? 'N/A');
                                 ?>
                             </td>
                         </tr>

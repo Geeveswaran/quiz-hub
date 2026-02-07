@@ -1,0 +1,16 @@
+[
+    {
+        "username": "chandrahasanb2@gmail.com",
+        "password": "$2y$10$NUAhJUDqIxv91eDRZAUm1.3ANzkCbSlSVS5dnDTKfdbDGA5JbWAsO",
+        "role": "teacher",
+        "_id": "69870e7b24051",
+        "created_at": "2026-02-07 10:05:47"
+    },
+    {
+        "username": "chandru",
+        "password": "$2y$10$RdervPhveDOjc1vl.RaubOYKyG25DkdwxUaktkI19lh80KiNTTC3S",
+        "role": "student",
+        "_id": "6987129be48c6",
+        "created_at": "2026-02-07 10:23:23"
+    }
+]

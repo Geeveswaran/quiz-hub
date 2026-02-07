@@ -1,0 +1,34 @@
+[
+    {
+        "user_id": "6987129be48c6",
+        "username": "chandru",
+        "score": 1,
+        "total": 2,
+        "date": "2026-02-07 10:23:58",
+        "_id": "698712bea83ec",
+        "created_at": "2026-02-07 10:23:58"
+    },
+    {
+        "user_id": "6987129be48c6",
+        "username": "chandru",
+        "score": 2,
+        "total": 3,
+        "date": "2026-02-07 10:31:42",
+        "_id": "6987148e38e14",
+        "created_at": "2026-02-07 10:31:42"
+    },
+    {
+        "user_id": "6987129be48c6",
+        "username": "chandru",
+        "score": 3,
+        "total": 3,
+        "attempted_questions": [
+            "6987168b9f4f8",
+            "698716a3ef181",
+            "698716c1395b4"
+        ],
+        "date": "2026-02-07 10:45:11",
+        "_id": "698717b7ba019",
+        "created_at": "2026-02-07 10:45:11"
+    }
+]

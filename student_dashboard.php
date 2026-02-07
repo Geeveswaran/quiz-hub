@@ -56,19 +56,15 @@ $my_results = $db->results->find(
                     </thead>
                     <tbody>
                         <?php foreach ($my_results as $r): 
-                            $percentage = ($r->total > 0) ? round(($r->score / $r->total) * 100, 2) : 0;
+                            $percentage = (($r['total'] ?? 0) > 0) ? round((($r['score'] ?? 0) / ($r['total'] ?? 0)) * 100, 2) : 0;
                         ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($r->score); ?></td>
-                            <td><?php echo htmlspecialchars($r->total); ?></td>
+                            <td><?php echo htmlspecialchars($r['score'] ?? 0); ?></td>
+                            <td><?php echo htmlspecialchars($r['total'] ?? 0); ?></td>
                             <td><?php echo $percentage; ?>%</td>
                             <td>
                                 <?php 
-                                if (isset($r->date) && $r->date instanceof MongoDB\BSON\UTCDateTime) {
-                                    echo $r->date->toDateTime()->format('Y-m-d H:i:s');
-                                } else {
-                                    echo "N/A";
-                                }
+                                echo htmlspecialchars($r['date'] ?? 'N/A');
                                 ?>
                             </td>
                         </tr>

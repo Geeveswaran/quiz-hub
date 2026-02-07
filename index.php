@@ -14,12 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = getDatabase();
         $user = $db->users->findOne(['username' => $username]);
 
-        if ($user && password_verify($password, $user->password)) {
-            $_SESSION['user_id'] = (string)$user->_id;
-            $_SESSION['username'] = $user->username;
-            $_SESSION['role'] = $user->role;
+        if ($user && isset($user['password']) && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['_id'] ?? uniqid();
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
 
-            if ($user->role === 'teacher') {
+            if ($user['role'] === 'teacher') {
                 header("Location: teacher_dashboard.php");
             } else {
                 header("Location: student_dashboard.php");
