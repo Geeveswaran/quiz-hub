@@ -15,15 +15,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'assign_quiz') {
         // Assign quiz to all students
         $questions = $db->questions->find(['status' => 'draft']);
+        $time_limit = (int)($_POST['time_limit'] ?? 30);
+        
         if (count($questions) > 0) {
             // Update questions to published status
             $db->questions->updateMany(['status' => 'draft'], ['status' => 'published']);
             
-            // Create quiz record
+            // Create quiz record with time limit
             $quiz_result = $db->quizzes->insertOne([
                 'teacher_id' => $_SESSION['user_id'],
                 'question_count' => count($questions),
                 'status' => 'published',
+                'time_limit_minutes' => $time_limit,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             
@@ -82,10 +85,12 @@ $question_count = count($draft_questions);
             <div style="display: flex; gap: 10px;">
                 <a href="teacher_dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
                 <?php if ($question_count > 0): ?>
-                    <form method="POST" action="" style="display: inline;">
+                    <form method="POST" action="" style="display: inline; display: flex; gap: 10px; align-items: center;">
                         <input type="hidden" name="action" value="assign_quiz">
-                        <button type="submit" class="btn" style="background-color: #27ae60;">
-                            Publish Quiz (<?php echo $question_count; ?> Questions)
+                        <label for="time_limit" style="margin: 0; color: white; font-weight: bold;">Time (min):</label>
+                        <input type="number" id="time_limit" name="time_limit" value="30" min="1" max="180" required style="padding: 8px; border-radius: 4px; border: none; width: 70px;">
+                        <button type="submit" class="btn" style="background-color: #27ae60; cursor: pointer;">
+                            Publish Quiz
                         </button>
                     </form>
                 <?php endif; ?>

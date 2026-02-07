@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 $db = getDatabase();
 $questions = $db->questions->find(['status' => 'published'], ['sort' => ['created_at' => -1]]);
 $results = $db->results->find([], ['sort' => ['date' => -1]]);
+$quiz = $db->quizzes->findOne(['status' => 'published']);
+$quiz_time_limit = $quiz['time_limit_minutes'] ?? 30;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,6 +36,11 @@ $results = $db->results->find([], ['sort' => ['date' => -1]]);
         <div style="margin-bottom: 2rem;">
             <h3>Actions</h3>
             <a href="add_question.php" class="btn">Add New Question</a>
+        </div>
+
+        <div style="margin-bottom: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 12px; color: white;">
+            <h3 style="color: white; margin-top: 0; border-left: none;">📋 Current Quiz Info</h3>
+            <p style="margin: 0.5rem 0;"><strong>Time Limit:</strong> <?php echo $quiz_time_limit; ?> minutes | <strong>Total Questions:</strong> <?php echo $db->questions->countDocuments(['status' => 'published']); ?></p>
         </div>
 
         <div style="margin-bottom: 2rem;">
@@ -77,16 +84,26 @@ $results = $db->results->find([], ['sort' => ['date' => -1]]);
                             <th>Student</th>
                             <th>Score</th>
                             <th>Date</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($results as $r): ?>
-                        <tr>
+                        <tr style="<?php echo (isset($r['cheated']) && $r['cheated']) ? 'background-color: #ffcccc; color: #cc0000; font-weight: bold;' : ''; ?>">
                             <td><?php echo htmlspecialchars($r['username'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars(($r['score'] ?? 0) . ' / ' . ($r['total'] ?? 0)); ?></td>
                             <td>
                                 <?php 
                                 echo htmlspecialchars($r['date'] ?? 'N/A');
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                if (isset($r['cheated']) && $r['cheated']) {
+                                    echo '⚠️ CHEATED';
+                                } else {
+                                    echo 'Completed';
+                                }
                                 ?>
                             </td>
                         </tr>

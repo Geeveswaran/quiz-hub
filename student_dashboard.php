@@ -12,6 +12,10 @@ $my_results = $db->results->find(
     ['username' => $_SESSION['username']],
     ['sort' => ['date' => -1]]
 );
+
+// Get quiz info with time limit
+$quiz = $db->quizzes->findOne(['status' => 'published']);
+$quiz_time_limit = $quiz['time_limit_minutes'] ?? 30;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,10 +35,16 @@ $my_results = $db->results->find(
             </div>
         </div>
 
-        <div style="margin-bottom: 2rem;">
-            <h3>Available Quizzes</h3>
-            <p>Test your knowledge with the General Knowledge Quiz.</p>
-            <a href="quiz.php" class="btn">Attempt Quiz</a>
+        <div style="margin-bottom: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px; color: white;">
+            <h3 style="color: white; margin-top: 0; border-left: none;">Available Quizzes</h3>
+            <p style="margin: 0.5rem 0;">Test your knowledge with the General Knowledge Quiz.</p>
+            <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+                <div style="flex: 1;">
+                    <p style="margin: 0.5rem 0;"><strong>⏱️ Time Limit:</strong> <?php echo $quiz_time_limit; ?> minutes</p>
+                    <p style="margin: 0.5rem 0; font-size: 0.9rem; opacity: 0.9;">Complete the quiz within the time limit to get your score.</p>
+                </div>
+                <a href="quiz.php" class="btn" style="background: white; color: #667eea; font-weight: bold; white-space: nowrap;">Start Quiz →</a>
+            </div>
         </div>
 
         <div>
