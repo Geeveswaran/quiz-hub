@@ -38,3 +38,8 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.shared]
+MONGODB_URI = "mongodb+srv://chandru:<db_password>@cluster0.ifkzocu.mongodb.net/?appName=Cluster0"
