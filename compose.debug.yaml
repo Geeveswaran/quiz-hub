@@ -1,0 +1,6 @@
+services:
+  quizmasterhub:
+    image: quizmasterhub
+    build:
+      context: .
+      dockerfile: ./Dockerfile

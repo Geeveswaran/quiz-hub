@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $answers = $_POST['answers'] ?? [];
     $cheating_attempts = (int)($_POST['cheating_attempts'] ?? 0);
     $cheated = isset($_POST['cheated']) && $_POST['cheated'] === 'true';
+    $quiz_title = $_POST['quiz_title'] ?? 'General Quiz';
     
     $score = 0;
     $total = 0;
@@ -38,14 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Get count of published questions
-    $publishedCount = $db->questions->countDocuments(['status' => 'published']);
+    // Get count of published questions in this quiz title
+    $publishedCount = $db->questions->countDocuments(['status' => 'published', 'quiz_title' => $quiz_title]);
     $total = $publishedCount;
 
-    // Store result with attempted questions and cheating flag
+    // Store result with quiz title, attempted questions and cheating flag
     $result = $db->results->insertOne([
         'user_id' => $_SESSION['user_id'],
         'username' => $_SESSION['username'],
+        'quiz_title' => $quiz_title,
         'score' => $score,
         'total' => $total,
         'attempted_questions' => $attempted_questions,

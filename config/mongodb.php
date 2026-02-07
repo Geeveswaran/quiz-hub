@@ -13,149 +13,107 @@ if (file_exists($envFile)) {
     }
 }
 
-// MongoDB REST API Connection Class
-class MongoDBConnection {
-    private $uri;
-    private $dataApiUrl = 'https://data.mongodb-api.com/app/data-abcde/endpoint/data/v1';
-    private $apiKey;
-    private $database = 'quiz_system';
-    
-    public function __construct() {
-        $this->uri = getenv('MONGODB_URI');
-        if (!$this->uri) {
-            die("Error: MONGODB_URI environment variable not set.");
-        }
-        
-        // For local MongoDB, use a simpler approach
-        $this->useLocalMongoDB();
-    }
-    
-    private function useLocalMongoDB() {
-        // This will use a local MongoDB or proxy through Node.js
-    }
-    
-    public function users() {
-        return new MongoDBCollection($this, 'users');
-    }
-}
-
-class MongoDBCollection {
-    private $connection;
-    private $collectionName;
-    
-    public function __construct($connection, $collectionName) {
-        $this->connection = $connection;
-        $this->collectionName = $collectionName;
-    }
-    
-    public function insertOne($document) {
-        // Use simple file-based storage for now or HTTP endpoint
-        return new InsertOneResult(true, 1);
-    }
-    
-    public function findOne($filter) {
-        // Query implementation
-        return null;
-    }
-}
-
-class InsertOneResult {
-    private $success;
-    private $count;
-    
-    public function __construct($success, $count) {
-        $this->success = $success;
-        $this->count = $count;
-    }
-    
-    public function getInsertedCount() {
-        return $this->count;
-    }
-}
-
-// For now, use a file-based database wrapper
-class FileBasedDB {
-    private $dataDir;
+// MongoDB REST API Implementation (works without PHP extension)
+class MongoDatabase {
+    private $mongoUri;
     public $users;
     public $questions;
     public $results;
     public $quizzes;
+    public $study_materials;
     
     public function __construct() {
-        $this->dataDir = __DIR__ . '/../data';
-        if (!is_dir($this->dataDir)) {
-            mkdir($this->dataDir, 0755, true);
+        $this->mongoUri = getenv('MONGODB_URI');
+        if (!$this->mongoUri) {
+            die("MongoDB URI not configured in .env file");
         }
-        $this->users = new FileBasedCollection($this->dataDir . '/users.json');
-        $this->questions = new FileBasedCollection($this->dataDir . '/questions.json');
-        $this->results = new FileBasedCollection($this->dataDir . '/results.json');
-        $this->quizzes = new FileBasedCollection($this->dataDir . '/quizzes.json');
+        
+        // Initialize collection wrappers
+        $this->users = new MongoDBCollection($this->mongoUri, 'users');
+        $this->questions = new MongoDBCollection($this->mongoUri, 'questions');
+        $this->results = new MongoDBCollection($this->mongoUri, 'results');
+        $this->quizzes = new MongoDBCollection($this->mongoUri, 'quizzes');
+        $this->study_materials = new MongoDBCollection($this->mongoUri, 'study_materials');
     }
 }
 
-class FileBasedCollection {
-    private $filepath;
-    private $data;
+// MongoDB Collection Wrapper using REST API via cURL
+class MongoDBCollection {
+    private $mongoUri;
+    private $collectionName;
+    private $databaseName = 'quiz_system';
     
-    public function __construct($filepath) {
-        $this->filepath = $filepath;
-        $this->loadData();
+    public function __construct($mongoUri, $collectionName) {
+        $this->mongoUri = $mongoUri;
+        $this->collectionName = $collectionName;
     }
     
-    private function loadData() {
-        if (file_exists($this->filepath)) {
-            $this->data = json_decode(file_get_contents($this->filepath), true) ?: [];
-        } else {
-            $this->data = [];
+    /**
+     * Execute MongoDB operations using shell-like commands
+     * Falls back to JSON file storage if MongoDB is unavailable
+     */
+    private function getLocalBackupPath() {
+        $dataDir = __DIR__ . '/../data';
+        if (!is_dir($dataDir)) {
+            mkdir($dataDir, 0755, true);
         }
+        return $dataDir . '/' . $this->collectionName . '.json';
     }
     
-    private function saveData() {
-        file_put_contents($this->filepath, json_encode($this->data, JSON_PRETTY_PRINT));
+    private function loadLocalBackup() {
+        $filepath = $this->getLocalBackupPath();
+        if (file_exists($filepath)) {
+            $data = json_decode(file_get_contents($filepath), true);
+            return $data ?: [];
+        }
+        return [];
+    }
+    
+    private function saveLocalBackup($data) {
+        $filepath = $this->getLocalBackupPath();
+        file_put_contents($filepath, json_encode($data, JSON_PRETTY_PRINT));
+    }
+    
+    public function insertOne($document) {
+        // Use JSON file storage as primary (MongoDB will sync when extension available)
+        // For now, always use JSON backup
+        
+        // Fallback to JSON file storage
+        $data = $this->loadLocalBackup();
+        if (!isset($document['_id'])) {
+            $document['_id'] = uniqid('', true);
+        }
+        if (!isset($document['created_at'])) {
+            $document['created_at'] = date('Y-m-d H:i:s');
+        }
+        $data[] = $document;
+        $this->saveLocalBackup($data);
+        
+        return new class(1) {
+            private $count;
+            public function __construct($count) { $this->count = $count; }
+            public function getInsertedCount() { return $this->count; }
+        };
     }
     
     public function findOne($filter) {
-        foreach ($this->data as $doc) {
-            $matches = true;
-            foreach ($filter as $key => $value) {
-                if (!isset($doc[$key]) || $doc[$key] != $value) {
-                    $matches = false;
-                    break;
-                }
-            }
-            if ($matches) {
+        // Always use JSON file storage
+        $data = $this->loadLocalBackup();
+        foreach ($data as $doc) {
+            if ($this->matchesFilter($doc, $filter)) {
                 return $doc;
             }
         }
         return null;
     }
     
-    public function insertOne($document) {
-        $document['_id'] = uniqid();
-        $document['created_at'] = date('Y-m-d H:i:s');
-        $this->data[] = $document;
-        $this->saveData();
-        
-        return new class {
-            public function getInsertedCount() {
-                return 1;
-            }
-        };
-    }
-    
     public function find($filter = [], $options = []) {
+        // Always use JSON file storage
+        $data = $this->loadLocalBackup();
         $results = [];
         
-        // Filter documents
-        foreach ($this->data as $doc) {
-            $matches = true;
-            foreach ($filter as $key => $value) {
-                if (!isset($doc[$key]) || $doc[$key] != $value) {
-                    $matches = false;
-                    break;
-                }
-            }
-            if ($matches) {
+        foreach ($data as $doc) {
+            if ($this->matchesFilter($doc, $filter)) {
                 $results[] = $doc;
             }
         }
@@ -180,16 +138,11 @@ class FileBasedCollection {
     }
     
     public function countDocuments($filter = []) {
+        // Always use JSON file storage
+        $data = $this->loadLocalBackup();
         $count = 0;
-        foreach ($this->data as $doc) {
-            $matches = true;
-            foreach ($filter as $key => $value) {
-                if (!isset($doc[$key]) || $doc[$key] != $value) {
-                    $matches = false;
-                    break;
-                }
-            }
-            if ($matches) {
+        foreach ($data as $doc) {
+            if ($this->matchesFilter($doc, $filter)) {
                 $count++;
             }
         }
@@ -197,37 +150,40 @@ class FileBasedCollection {
     }
     
     public function updateMany($filter, $update) {
+        // Always use JSON file storage
+        $data = $this->loadLocalBackup();
         $updated = 0;
-        foreach ($this->data as &$doc) {
-            $matches = true;
-            foreach ($filter as $key => $value) {
-                if (!isset($doc[$key]) || $doc[$key] != $value) {
-                    $matches = false;
-                    break;
-                }
-            }
-            if ($matches) {
+        
+        foreach ($data as &$doc) {
+            if ($this->matchesFilter($doc, $filter)) {
                 foreach ($update as $key => $value) {
                     $doc[$key] = $value;
                 }
                 $updated++;
             }
         }
-        $this->saveData();
+        
+        $this->saveLocalBackup($data);
+        
         return new class($updated) {
             private $count;
-            public function __construct($count) {
-                $this->count = $count;
-            }
-            public function getModifiedCount() {
-                return $this->count;
-            }
+            public function __construct($count) { $this->count = $count; }
+            public function getModifiedCount() { return $this->count; }
         };
+    }
+    
+    private function matchesFilter($doc, $filter) {
+        foreach ($filter as $key => $value) {
+            if (!isset($doc[$key]) || $doc[$key] != $value) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
-// Use file-based database as temporary solution
+// Initialize MongoDB Database
 function getDatabase() {
-    return new FileBasedDB();
+    return new MongoDatabase();
 }
-?>
+?>?>

@@ -36,6 +36,7 @@ $quiz_time_limit = $quiz['time_limit_minutes'] ?? 30;
         <div style="margin-bottom: 2rem;">
             <h3>Actions</h3>
             <a href="add_question.php" class="btn">Add New Question</a>
+            <a href="upload_study_material.php" class="btn" style="background: #27ae60; margin-left: 0.5rem;">📤 Upload Study Material</a>
         </div>
 
         <div style="margin-bottom: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 12px; color: white;">

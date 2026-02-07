@@ -57,5 +57,35 @@
         "date": "2026-02-07 11:06:35",
         "_id": "69871cbb7e108",
         "created_at": "2026-02-07 11:06:35"
+    },
+    {
+        "user_id": "6987129be48c6",
+        "username": "chandru",
+        "score": 1,
+        "total": 6,
+        "attempted_questions": [
+            "69875f6d5c0fe6.30581100"
+        ],
+        "cheated": false,
+        "cheating_attempts": 0,
+        "date": "2026-02-07 15:52:08",
+        "_id": "69875fa83fc415.36768110",
+        "created_at": "2026-02-07 15:52:08"
+    },
+    {
+        "user_id": "6987129be48c6",
+        "username": "chandru",
+        "score": 3,
+        "total": 9,
+        "attempted_questions": [
+            "698710da1477d",
+            "698712763f3b4",
+            "6987145fdf651"
+        ],
+        "cheated": false,
+        "cheating_attempts": 0,
+        "date": "2026-02-07 15:55:27",
+        "_id": "6987606fa00147.69790419",
+        "created_at": "2026-02-07 15:55:27"
     }
 ]
