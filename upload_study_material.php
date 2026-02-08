@@ -11,6 +11,14 @@ $db = getDatabase();
 $message = '';
 $error = '';
 
+// Handle success/error from delete
+if (isset($_GET['success'])) {
+    $message = $_GET['success'];
+}
+if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
@@ -55,6 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $material = [
                     'teacher_id' => $_SESSION['user_id'],
                     'teacher_name' => $_SESSION['username'],
+                    'college' => $_SESSION['college'],
+                    'college_name' => $_SESSION['college_name'],
+                    'batch' => $_SESSION['batch'],
                     'title' => $title,
                     'description' => $description,
                     'filename' => $filename,
@@ -78,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get all active study materials
-$study_materials = $db->study_materials->find(['status' => 'active'], ['sort' => ['created_at' => -1]]);
+// Get all active study materials for this college and batch
+$study_materials = $db->study_materials->find(['status' => 'active', 'college' => $_SESSION['college'], 'batch' => $_SESSION['batch']], ['sort' => ['created_at' => -1]]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -284,6 +295,7 @@ $study_materials = $db->study_materials->find(['status' => 'active'], ['sort' =>
                         </div>
                         <div>
                             <a href="uploads/<?php echo htmlspecialchars($material['filename']); ?>" download class="btn" style="margin-left: 1rem;">Download</a>
+                            <a href="delete_material.php?id=<?php echo htmlspecialchars($material['_id']); ?>" class="btn btn-danger" style="margin-left: 0.5rem; background: linear-gradient(135deg, #fa7921 0%, #f5576c 100%);" onclick="return confirm('Are you sure you want to delete this material? This action cannot be undone and students will no longer have access to it.');">Delete</a>
                         </div>
                     </div>
                 </div>

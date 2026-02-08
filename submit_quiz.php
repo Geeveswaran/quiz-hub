@@ -48,11 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'user_id' => $_SESSION['user_id'],
         'username' => $_SESSION['username'],
         'quiz_title' => $quiz_title,
+        'college' => $_SESSION['college'],
+        'college_name' => $_SESSION['college_name'],
+        'batch' => $_SESSION['batch'],
         'score' => $score,
         'total' => $total,
         'attempted_questions' => $attempted_questions,
         'cheated' => $cheated || $cheating_attempts >= 2 ? true : false,
         'cheating_attempts' => $cheating_attempts,
+        'status' => 'completed',
         'date' => date('Y-m-d H:i:s')
     ]);
 

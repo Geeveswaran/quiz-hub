@@ -172,6 +172,34 @@ class MongoDBCollection {
         };
     }
     
+    public function deleteMany($filter = []) {
+        // Always use JSON file storage
+        $data = $this->loadLocalBackup();
+        $deleted = 0;
+        
+        // If empty filter, delete all
+        if (empty($filter)) {
+            $deleted = count($data);
+            $this->saveLocalBackup([]);
+        } else {
+            $filteredData = [];
+            foreach ($data as $doc) {
+                if (!$this->matchesFilter($doc, $filter)) {
+                    $filteredData[] = $doc;
+                } else {
+                    $deleted++;
+                }
+            }
+            $this->saveLocalBackup($filteredData);
+        }
+        
+        return new class($deleted) {
+            private $count;
+            public function __construct($count) { $this->count = $count; }
+            public function getDeletedCount() { return $this->count; }
+        };
+    }
+    
     private function matchesFilter($doc, $filter) {
         foreach ($filter as $key => $value) {
             if (!isset($doc[$key]) || $doc[$key] != $value) {

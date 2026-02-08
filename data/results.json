@@ -1,91 +1,32 @@
 [
     {
-        "user_id": "6987129be48c6",
+        "user_id": "6988369d54c856.26551178",
         "username": "chandru",
-        "score": 1,
-        "total": 2,
-        "date": "2026-02-07 10:23:58",
-        "_id": "698712bea83ec",
-        "created_at": "2026-02-07 10:23:58"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 2,
-        "total": 3,
-        "date": "2026-02-07 10:31:42",
-        "_id": "6987148e38e14",
-        "created_at": "2026-02-07 10:31:42"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 3,
-        "total": 3,
+        "quiz_title": "RDPMS",
+        "college": "kongu-polytechnic",
+        "college_name": "Kongu Polytechnic",
+        "batch": "batch1",
+        "score": 6,
+        "total": 12,
         "attempted_questions": [
-            "6987168b9f4f8",
-            "698716a3ef181",
-            "698716c1395b4"
-        ],
-        "date": "2026-02-07 10:45:11",
-        "_id": "698717b7ba019",
-        "created_at": "2026-02-07 10:45:11"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 0,
-        "total": 4,
-        "attempted_questions": [],
-        "cheated": true,
-        "cheating_attempts": 2,
-        "date": "2026-02-07 10:57:08",
-        "_id": "69871a84ded7c",
-        "created_at": "2026-02-07 10:57:08"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 2,
-        "total": 5,
-        "attempted_questions": [
-            "69871a4c285ce",
-            "69871c852a481"
+            "69883d6ced8d42.23630319",
+            "69883dc8f3af91.28976734",
+            "69883e08e57db4.89551687",
+            "69883e47bf84f4.32887944",
+            "69883e958ed3c9.49625084",
+            "69883f01d6be63.08110890",
+            "69883f5f49f767.67926815",
+            "69883fa83d6095.92157665",
+            "69883fd867bf33.32150756",
+            "69884008c2dcf1.87089651",
+            "69884037b58f54.38854253",
+            "6988408c1869f9.39792858"
         ],
         "cheated": false,
         "cheating_attempts": 1,
-        "date": "2026-02-07 11:06:35",
-        "_id": "69871cbb7e108",
-        "created_at": "2026-02-07 11:06:35"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 1,
-        "total": 6,
-        "attempted_questions": [
-            "69875f6d5c0fe6.30581100"
-        ],
-        "cheated": false,
-        "cheating_attempts": 0,
-        "date": "2026-02-07 15:52:08",
-        "_id": "69875fa83fc415.36768110",
-        "created_at": "2026-02-07 15:52:08"
-    },
-    {
-        "user_id": "6987129be48c6",
-        "username": "chandru",
-        "score": 3,
-        "total": 9,
-        "attempted_questions": [
-            "698710da1477d",
-            "698712763f3b4",
-            "6987145fdf651"
-        ],
-        "cheated": false,
-        "cheating_attempts": 0,
-        "date": "2026-02-07 15:55:27",
-        "_id": "6987606fa00147.69790419",
-        "created_at": "2026-02-07 15:55:27"
+        "status": "completed",
+        "date": "2026-02-08 07:58:52",
+        "_id": "6988423c7b2c22.13791952",
+        "created_at": "2026-02-08 07:58:52"
     }
 ]

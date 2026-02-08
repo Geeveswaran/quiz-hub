@@ -1,60 +1,18 @@
 [
     {
-        "teacher_id": "69870e7b24051",
-        "question_count": 3,
+        "teacher_id": "6988373aa742c2.82781649",
+        "teacher_name": "chandru1",
+        "quiz_title": "RDPMS",
+        "college": "kongu-polytechnic",
+        "college_name": "Kongu Polytechnic",
+        "batch": "batch1",
+        "question_count": 12,
         "status": "published",
-        "created_at": "2026-02-07 10:41:09",
-        "_id": "698716c5887f1"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 3,
-        "status": "published",
-        "created_at": "2026-02-07 10:41:51",
-        "_id": "698716efdc48e"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 3,
-        "status": "published",
-        "created_at": "2026-02-07 10:42:24",
-        "_id": "69871710e5bf2"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 3,
-        "status": "published",
-        "created_at": "2026-02-07 10:42:27",
-        "_id": "69871713970b5"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 3,
-        "status": "published",
-        "created_at": "2026-02-07 10:44:35",
-        "_id": "6987179369159"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 1,
-        "status": "published",
-        "created_at": "2026-02-07 10:56:14",
-        "_id": "69871a4e3a89c"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 1,
-        "status": "published",
-        "time_limit_minutes": 5,
-        "created_at": "2026-02-07 11:05:57",
-        "_id": "69871c9539ea9"
-    },
-    {
-        "teacher_id": "69870e7b24051",
-        "question_count": 1,
-        "status": "published",
-        "time_limit_minutes": 30,
-        "created_at": "2026-02-07 15:51:12",
-        "_id": "69875f70537777.91856732"
+        "time_limit_minutes": 10,
+        "due_date": "2026-02-15",
+        "due_time": "23:59",
+        "due_datetime": "2026-02-15 23:59:00",
+        "created_at": "2026-02-08 07:55:59",
+        "_id": "6988418fa67574.20436680"
     }
 ]

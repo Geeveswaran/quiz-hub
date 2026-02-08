@@ -12,64 +12,66 @@ $db = getDatabase();
 // Get quiz selection from URL parameter
 $selected_quiz_id = $_GET['quiz_id'] ?? null;
 
-// Get all available quizzes
-$all_quizzes = $db->quizzes->find(['status' => 'published'], ['sort' => ['quiz_title' => 1]]);
+// Get all available quizzes for this college and batch
+$all_quizzes = $db->quizzes->find(['status' => 'published', 'college' => $_SESSION['college'], 'batch' => $_SESSION['batch']], ['sort' => ['quiz_title' => 1]]);
 $available_quizzes = [];
 foreach ($all_quizzes as $q) {
     $available_quizzes[] = $q;
 }
 
 // If no quiz selected, show quiz selection page
-if (!$selected_quiz_id && count($available_quizzes) > 0) {
-    ?>
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Select Quiz - Quiz System</title>
-        <link rel="stylesheet" href="style.css">
-        <style>
-            .quiz-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 8px;
-                margin-bottom: 1rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            }
-            .quiz-card h3 {
-                margin: 0 0 0.5rem 0;
-                color: white;
-            }
-            .quiz-card p {
-                margin: 0.25rem 0;
-                font-size: 0.95rem;
-            }
-            .quiz-card .btn {
-                background: white;
-                color: #667eea;
-                font-weight: bold;
-                padding: 0.75rem 1.5rem;
-            }
-            .quiz-card .btn:hover {
-                background: #f0f0f0;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header-nav">
-                <h2>Select a Quiz to Take</h2>
-                <a href="student_dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
-            </div>
+if (!$selected_quiz_id) {
+    if (count($available_quizzes) > 0) {
+        // Show quiz selection
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Select Quiz - Quiz System</title>
+            <link rel="stylesheet" href="style.css">
+            <style>
+                .quiz-card {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 1.5rem;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                }
+                .quiz-card h3 {
+                    margin: 0 0 0.5rem 0;
+                    color: white;
+                }
+                .quiz-card p {
+                    margin: 0.25rem 0;
+                    font-size: 0.95rem;
+                }
+                .quiz-card .btn {
+                    background: white;
+                    color: #667eea;
+                    font-weight: bold;
+                    padding: 0.75rem 1.5rem;
+                }
+                .quiz-card .btn:hover {
+                    background: #f0f0f0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header-nav">
+                    <h2>Select a Quiz to Take</h2>
+                    <div>
+                        <span><?php echo htmlspecialchars($_SESSION['college_name']); ?></span>
+                        <a href="student_dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                </div>
 
-            <?php if (count($available_quizzes) === 0): ?>
-                <div class="alert alert-error">No quizzes available right now. Please check back later.</div>
-            <?php else: ?>
                 <div>
                     <?php foreach ($available_quizzes as $quiz): 
                         $quiz_questions = $db->questions->find(['status' => 'published', 'quiz_title' => $quiz['quiz_title']]);
@@ -79,18 +81,91 @@ if (!$selected_quiz_id && count($available_quizzes) > 0) {
                             <div>
                                 <h3><?php echo htmlspecialchars($quiz['quiz_title'] ?? 'Untitled Quiz'); ?></h3>
                                 <p><strong>Questions:</strong> <?php echo $q_count; ?> | <strong>Time Limit:</strong> <?php echo htmlspecialchars($quiz['time_limit_minutes']); ?> minutes</p>
+                                <p style="font-size: 0.85rem; opacity: 0.9;">Posted by: <?php echo htmlspecialchars($quiz['teacher_name'] ?? 'Unknown'); ?></p>
                                 <p style="font-size: 0.85rem; opacity: 0.9;">Created: <?php echo htmlspecialchars($quiz['created_at']); ?></p>
                             </div>
                             <a href="?quiz_id=<?php echo htmlspecialchars($quiz['_id']); ?>" class="btn">Start Quiz</a>
                         </div>
                     <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
-        </div>
-    </body>
-    </html>
-    <?php
-    exit;
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
+    } else {
+        // No quizzes available for this college
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>No Quizzes Available - Quiz System</title>
+            <link rel="stylesheet" href="style.css">
+            <style>
+                .info-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 80vh;
+                }
+                .info-box {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 3rem;
+                    border-radius: 12px;
+                    text-align: center;
+                    max-width: 500px;
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+                }
+                .info-box h2 {
+                    margin-top: 0;
+                    font-size: 1.8rem;
+                    margin-bottom: 1rem;
+                    border: none;
+                    padding: 0;
+                    color: white;
+                }
+                .info-box p {
+                    margin: 1rem 0;
+                    font-size: 1.1rem;
+                    opacity: 0.95;
+                }
+                .info-box a.btn {
+                    margin-top: 1.5rem;
+                    display: inline-block;
+                    background: white !important;
+                    color: #667eea !important;
+                    font-weight: bold;
+                    padding: 0.75rem 2rem !important;
+                    text-decoration: none !important;
+                    box-shadow: none !important;
+                    cursor: pointer;
+                }
+                .info-box a.btn:hover {
+                    background: #f0f0f0 !important;
+                    opacity: 1;
+                    text-decoration: none !important;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="info-container">
+                    <div class="info-box">
+                        <h2>📚 No Quizzes Available</h2>
+                        <p>There are currently no quizzes available for your college.</p>
+                        <p>Please check back later or contact your teacher.</p>
+                        <a href="student_dashboard.php" class="btn">← Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
+    }
 }
 
 // Find the selected quiz
@@ -104,8 +179,97 @@ if ($selected_quiz_id) {
     }
 }
 
-if (!$quiz) {
-    echo "<!DOCTYPE html><html><head><link rel='stylesheet' href='style.css'></head><body><div class='container'><h3>Quiz not found or no longer available.</h3><a href='quiz.php' class='btn'>Back to Quiz Selection</a></div></body></html>";
+// Check if quiz has expired
+$quiz_expired = false;
+if ($quiz) {
+    $due_datetime = $quiz['due_datetime'] ?? '';
+    if ($due_datetime) {
+        $due_timestamp = strtotime($due_datetime);
+        $now_timestamp = time();
+        if ($due_timestamp < $now_timestamp) {
+            $quiz_expired = true;
+        }
+    }
+}
+
+if (!$quiz || $quiz_expired) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quiz Not Found - Quiz System</title>
+        <link rel="stylesheet" href="style.css">
+        <style>
+            .error-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 80vh;
+            }
+            .error-box {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+                padding: 3rem;
+                border-radius: 12px;
+                text-align: center;
+                max-width: 500px;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            }
+            .error-box h2 {
+                margin-top: 0;
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+                color: white;
+                border: none;
+                padding: 0;
+            }
+            .error-box p {
+                margin: 1rem 0;
+                font-size: 1.1rem;
+                opacity: 0.95;
+            }
+            .error-box a.btn {
+                margin-top: 1.5rem;
+                display: inline-block;
+                background: white !important;
+                color: #f5576c !important;
+                font-weight: bold;
+                padding: 0.75rem 2rem !important;
+                text-decoration: none !important;
+                box-shadow: none !important;
+                cursor: pointer;
+                border: 2px solid white;
+            }
+            .error-box a.btn:hover {
+                background: transparent !important;
+                color: white !important;
+                text-decoration: none !important;
+                border: 2px solid white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="error-container">
+                <div class="error-box">
+                    <?php if ($quiz_expired): ?>
+                        <h2>⏰ Quiz Expired</h2>
+                        <p>This quiz ended on <strong><?php echo date('M d, Y H:i', strtotime($quiz['due_datetime'])); ?></strong></p>
+                        <p>You can no longer take this quiz. However, you can still view your previous results.</p>
+                    <?php else: ?>
+                        <h2>❌ Quiz Not Found</h2>
+                        <p>This quiz is no longer available or has been deleted.</p>
+                        <p>Please select another quiz to continue.</p>
+                    <?php endif; ?>
+                    <a href="quiz.php" class="btn" onclick="window.location.href='quiz.php'; return false;">← Back to Quiz Selection</a>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
     exit;
 }
 
